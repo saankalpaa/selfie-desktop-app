@@ -20,4 +20,4 @@ This is one of my project in HCI class that I am working on during my Master's d
 
 3. Start the app
 
-   `python3 face_detector.py`
+   `python3 selfie_app.py`
