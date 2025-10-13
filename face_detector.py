@@ -15,9 +15,9 @@ def draw_quadrants_and_center_box(frame):
     center_coords_x = width // 2
     center_coords_y = height // 2
     
-    # define center box size (let's assign 20% of the screen to the width and 40% to height such that we can have the face detector bounding box exactly inside the center rectangle)
-    center_box_width = int(width * 0.2) 
-    center_box_height = int(height * 0.4)
+    # define center box size (let's assign 30% of the screen to the width and 45% to height such that we can have the face detector bounding box exactly inside the center rectangle)
+    center_box_width = int(width * 0.3) 
+    center_box_height = int(height * 0.45)
     
     # draw a vertical center line
     cv2.line(frame, (center_coords_x, 0), (center_coords_x, height), (255, 255, 255), 2)
