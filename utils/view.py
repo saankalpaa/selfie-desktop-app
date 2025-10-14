@@ -87,7 +87,7 @@ def is_face_fully_in_target(x, y, w, h, target, frame_w, frame_h):
 
 def save_image(frame):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"selfie_{ts}.jpg"
+    filename = f"images/selfie_{ts}.jpg"
     
     cv2.imwrite(filename, frame)
     

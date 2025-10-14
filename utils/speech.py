@@ -21,7 +21,7 @@ def listen_for_command():
         recognizer.adjust_for_ambient_noise(source, duration=0.5)
         
         try:
-            audio = recognizer.listen(source, timeout=10, phrase_time_limit=5)
+            audio = recognizer.listen(source, timeout=2, phrase_time_limit=5)
             print("[PROCESSING]")
             command = recognizer.recognize_google(audio).lower()
             print(f"[USER]: {command}")
@@ -89,6 +89,7 @@ def get_guidance_for_user(current_position, target_position):
     elif dx > 0:
         parts.append("one step right")
     if not parts:
+        # in case of current position and target position is same but the face is not fully inside the position/quadrant. so just try to move a user to take them out of this edge case. this is not the perfect solution but it just does the job of taking user out of this weird position
         if current_position == "top-left":
             return "Move one step left and one step up"
         elif current_position == "top-right":
