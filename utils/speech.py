@@ -5,6 +5,9 @@ from constant import MAX_ATTEMPTS_TO_GET_A_TARGET_POSITION, VALID_POSITIONS
 recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 
+with microphone as source:
+    recognizer.adjust_for_ambient_noise(source, duration=1.5)
+    
 def speak(text: str):
     """Uses mac os 'say' command for tts"""
     print('[APP]: ', text)
@@ -18,10 +21,9 @@ def speak(text: str):
 def listen_for_command():
     with microphone as source:
         print("[LISTENING...]")
-        recognizer.adjust_for_ambient_noise(source, duration=0.5)
         
         try:
-            audio = recognizer.listen(source, timeout=2, phrase_time_limit=5)
+            audio = recognizer.listen(source, timeout=3, phrase_time_limit=8)
             print("[PROCESSING]")
             command = recognizer.recognize_google(audio).lower()
             print(f"[USER]: {command}")
@@ -81,23 +83,23 @@ def get_guidance_for_user(current_position, target_position):
     dy = ty - cy
     parts = []
     if dy < 0:
-        parts.append("one step up")
+        parts.append("one step forward")
     elif dy > 0:
-        parts.append("one step down")
+        parts.append("one step back without turning around")
     if dx < 0:
-        parts.append("one step left")
+        parts.append("one side-step to your left")
     elif dx > 0:
-        parts.append("one step right")
+        parts.append("one side-step to your right")
     if not parts:
         # in case of current position and target position is same but the face is not fully inside the position/quadrant. so just try to move a user to take them out of this edge case. this is not the perfect solution but it just does the job of taking user out of this weird position
         if current_position == "top-left":
-            return "Move one step left and one step up"
+            return "Take one side-step to your left and one step forward"
         elif current_position == "top-right":
-            return "Move one step right and one step up"
+            return "Take one side-step to your right and one step forward"
         elif current_position == "bottom-right":
-            return "Move one step right and one step down"
+            return "Take one side-step to your right and one step back without turning around"
         elif current_position == "bottom-left":
-            return "Move one step left and one step down"
+            return "Take one side-step to your left and one step back without turning around"
         else:
-            return "Move one step right"
-    return "Move " + " and ".join(parts)
+            return "Take one side-step to your right"
+    return "Take " + " and ".join(parts)
