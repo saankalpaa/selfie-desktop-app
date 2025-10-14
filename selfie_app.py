@@ -2,15 +2,14 @@ import time
 import cv2
 
 from constant import EDGE_THRESHOLD, GUIDANCE_INTERVAL, REQUIRED_STABLE_FRAMES
-from utils.view import check_if_user_is_facing_the_camera, draw_quadrants_and_center_box, get_current_postion_where_the_face_lies, is_face_fully_in_target, save_image
+from utils.view import draw_quadrants_and_center_box, get_current_postion_where_the_face_lies, is_face_fully_in_target, save_image
 from utils.speech import get_guidance_for_user, get_target_position, speak
 
 def main():
     target_position = get_target_position()
     
-    #Load a pre-trained Haar Cascade classifier to perform face detection and eye detection.
+    #Load a pre-trained Haar Cascade classifier to perform face detection
     face_classifier = cv2.CascadeClassifier(cv2.data.haarcascades +'haarcascade_frontalface_default.xml')
-    eye_classifier = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
     #Open your camera --- make sure there aren't more than one face as this will trigger multiple detections. The code can handle this, but for your project this will cause an issue.  
     face_cap = cv2.VideoCapture(0)
@@ -88,19 +87,8 @@ def main():
             last_detected_quad_coords_of_user = (x, y, w, h)
             offscreen_last_command= "initial"
                         
-            is_user_facing_the_camera = check_if_user_is_facing_the_camera(gray_frame, x, y, w, h, eye_classifier)
-            
-            if not is_user_facing_the_camera:
-                #ask user to turn their head slightly
-                has_countdown_started = False
-                frames_in_target = 0
-                
-                if current_time - last_guidance_time >= GUIDANCE_INTERVAL:
-                    speak("Please turn your head left to right slowly.")
-                    last_guidance_time = current_time
-                
-            else:
-                if not fully_in_target:
+           
+            if not fully_in_target:
                     #if the user is not in the target position guide them towards the target position
                     has_countdown_started = False
                     frames_in_target = 0
@@ -111,7 +99,7 @@ def main():
                         
                         last_guidance_time = current_time
                         
-                else:
+            else:
                     # face is in the target position and also facing the camera
                     frames_in_target += 1
                     
@@ -189,20 +177,20 @@ def main():
                 else:
                     #Users face hasn't been detected once in this session so just follow a pattern
                     if offscreen_last_command == "initial":
-                        speak("I can't see your face. Try moving a step back.")
+                        speak("I cannot see your face yet. Please take two steps back.")
                         offscreen_last_command = "step_back"
+
                     elif offscreen_last_command == "step_back":
-                        speak("Now try moving slightly to your left.")
+                        speak("Perfect. Now take two steps towards your left side.")
                         offscreen_last_command = "move_left"
+                        
                     elif offscreen_last_command == "move_left":
-                        speak("Now try moving slightly to your right.")
+                        speak("Okay. Now take four step towards your right side.")
                         offscreen_last_command = "move_right"
-                    elif offscreen_last_command == "move_right":
-                        speak("Now try moving a little up.")
-                        offscreen_last_command = "move_up"
-                    elif offscreen_last_command == "move_up":
-                        speak("Now try moving a little down.")
-                        offscreen_last_command = "move_down"
+                        
+                    elif offscreen_last_command == "move_closer":
+                        speak("Now take one more step backward again.")
+                        offscreen_last_command = "final_adjust"
                     else:
                         speak("Please adjust your position slowly; I’ll keep guiding you.")
                         offscreen_last_command = "initial"

@@ -1,5 +1,8 @@
 from datetime import datetime
+import subprocess
+import platform
 import cv2
+import os
 
 def draw_quadrants_and_center_box(frame):
     height, width = frame.shape[:2]
@@ -82,31 +85,21 @@ def is_face_fully_in_target(x, y, w, h, target, frame_w, frame_h):
     
     return False
 
-def check_if_user_is_facing_the_camera(gray, x, y, w, h, eye_classifier):
-    """Detect two eyes inside fac."""
-    try:
-        roi = gray[y:y+h, x:x+w]
-    except Exception:
-        return False
-    
-    eyes = eye_classifier.detectMultiScale(roi, scaleFactor=1.1, minNeighbors=5, minSize=(10,10))
-    
-    if len(eyes) < 2:
-        # the user is not facing the camera
-        return False 
-    
-    # take two biggest eyes
-    eyes = sorted(eyes, key=lambda e: e[2]*e[3], reverse=True)[:2]
-    
-    # get y coordinates of the eyes
-    y_pos = [e[1] + e[3]//2 for e in eyes]
-    
-    # if eyes are roughly horizontal, user is likely facing the camera
-    return abs(y_pos[0] - y_pos[1]) < (h * 0.18)
-
 def save_image(frame):
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"selfie_{ts}.jpg"
     
     cv2.imwrite(filename, frame)
+    
+    try:
+        system = platform.system()
+        if system == "Windows":
+            os.startfile(filename)
+        elif system == "Darwin": 
+            subprocess.run(["open", filename])
+        else: 
+            subprocess.run(["xdg-open", filename])
+    except Exception as e:
+        print(f"Image saved but couldn't open it automatically: {e}")
+    
     return filename

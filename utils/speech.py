@@ -6,7 +6,7 @@ recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 
 def speak(text: str):
-    """Use macOs 'say' command for tts"""
+    """Uses mac os 'say' command for tts"""
     print('[APP]: ', text)
     
     try:
@@ -89,5 +89,14 @@ def get_guidance_for_user(current_position, target_position):
     elif dx > 0:
         parts.append("one step right")
     if not parts:
-        return "Adjust your position slightly"
+        if current_position == "top-left":
+            return "Move one step left and one step up"
+        elif current_position == "top-right":
+            return "Move one step right and one step up"
+        elif current_position == "bottom-right":
+            return "Move one step right and one step down"
+        elif current_position == "bottom-left":
+            return "Move one step left and one step down"
+        else:
+            return "Move one step right"
     return "Move " + " and ".join(parts)
