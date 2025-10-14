@@ -22,6 +22,9 @@ def main():
     frame_width = int(face_cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(face_cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     
+    cv2.namedWindow('Selfie App', cv2.WINDOW_NORMAL)
+    cv2.setWindowProperty('Selfie App', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
+
     has_image_been_captured = False
     last_guidance_time = time.time() - GUIDANCE_INTERVAL
     
