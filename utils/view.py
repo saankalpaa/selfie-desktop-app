@@ -103,3 +103,50 @@ def save_image(frame):
         print(f"Image saved but couldn't open it automatically: {e}")
     
     return filename
+
+def check_if_user_is_facing_the_camera(gray, x, y, w, h, eye_classifier):
+    """Check if user is facing the camera and if not return where is he facing towards left or right"""
+    try:
+        roi = gray[y:y+h, x:x+w]
+    except Exception:
+        return False, "no_eyes_detected"
+    
+    eyes = eye_classifier.detectMultiScale(roi, scaleFactor=1.1, minNeighbors=5, minSize=(10, 10))
+    
+    if len(eyes) < 2:
+        return False, "no_eyes_detected"
+    
+    # Take two biggest eyes
+    eyes = sorted(eyes, key=lambda e: e[2]*e[3], reverse=True)[:2]
+    
+    # Get y coordinates of the eyes (vertical position)
+    y_pos = [e[1] + e[3]//2 for e in eyes]
+    
+    # Check if eyes are roughly horizontal (not tilted)
+    eyes_horizontal = abs(y_pos[0] - y_pos[1]) < (h * 0.18)
+    
+    if not eyes_horizontal:
+        return False, "no_eyes_detected"
+    
+    # Check horizontal alignment - calculate center of both eyes
+    eye_centers_x = [(e[0] + e[2]//2) for e in eyes]
+    avg_eye_center_x = sum(eye_centers_x) / len(eye_centers_x)
+    
+    # Calculate face center
+    face_center_x = w / 2
+    
+    # Calculate offset as percentage of face width
+    offset = (avg_eye_center_x - face_center_x) / w
+    
+    # Define threshold for "centered" (e.g., within 15% of center)
+    CENTER_THRESHOLD = 0.15
+    
+    if abs(offset) <= CENTER_THRESHOLD:
+        # User is facing the camera
+        return True, "center"
+    elif offset < -CENTER_THRESHOLD:
+        # Eyes are on the left side of face ROI
+        return False, "rotate_left"
+    else:
+        # Eyes are on the right side of face ROI
+        return False, "rotate_right"

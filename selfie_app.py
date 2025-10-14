@@ -107,8 +107,8 @@ def main():
             
             last_detected_quad_coords_of_user = (x, y, w, h)
             offscreen_last_command= "initial"
-                        
-           
+
+
             if not fully_in_target:
                     #if the user is not in the target position guide them towards the target position
                     has_countdown_started = False
