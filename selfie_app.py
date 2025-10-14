@@ -1,7 +1,7 @@
 import time
 import cv2
 
-from constant import EDGE_THRESHOLD, GUIDANCE_INTERVAL, REQUIRED_STABLE_FRAMES
+from constant import EDGE_THRESHOLD, GUIDANCE_INTERVAL, INITIAL_FACE_DETECTION_WAIT_TIME, REQUIRED_STABLE_FRAMES
 from utils.view import draw_quadrants_and_center_box, get_current_postion_where_the_face_lies, is_face_fully_in_target, save_image
 from utils.speech import get_guidance_for_user, get_target_position, speak
 
@@ -38,6 +38,9 @@ def main():
     
     frames_in_target = 0
     
+    initial_face_detection = False
+    initial_face_detection_start = time.time()
+    
     #Keep looping until 'q' is pressed to quit or an image has been captured
     while True:
         #Read a frame from the camera.
@@ -66,6 +69,21 @@ def main():
 
         # keep track of current time
         current_time = time.time()
+        
+        # give 5 seconds for initial detection before giving guidance
+        if not initial_face_detection:
+            if len(faces) > 0:
+                # face detected
+                initial_face_detection = True
+                user_last_detected_time = current_time
+            elif (current_time - initial_face_detection_start) >= INITIAL_FACE_DETECTION_WAIT_TIME:
+                # face wasn't detected proceed with the guidance
+                initial_face_detection = True
+            else:
+                cv2.imshow('Selfie App', im_frame)
+                if cv2.waitKey(1) & 0xFF == ord('q'):
+                    break
+                continue 
 
         if len(faces) > 0 and not has_image_been_captured:   
             #choose the largest face
