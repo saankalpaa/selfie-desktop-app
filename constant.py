@@ -1,4 +1,4 @@
-GUIDANCE_INTERVAL = 7.0
+GUIDANCE_INTERVAL = 9.0
 MAX_ATTEMPTS_TO_GET_A_TARGET_POSITION = 3
 VALID_POSITIONS = ["top left", "top right", "bottom left", "bottom right", "center"]
 REQUIRED_STABLE_FRAMES=30

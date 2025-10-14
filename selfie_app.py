@@ -161,13 +161,13 @@ def main():
                     towards_bottom = (ly + lh) > (frame_height * (1 - EDGE_THRESHOLD))
 
                     if towards_left:
-                        speak("Move one step right")
+                        speak("Take one side-step to your right")
                     elif towards_right:
-                        speak("Move one step left")
+                        speak("Take one side-step to your left")
                     elif towards_top:
-                        speak("Move one step down")
+                        speak("Take one step backwards without turning around")
                     elif towards_bottom:
-                        speak("Move one step up")
+                        speak("Take one step forward")
                     else:
                         fx = lx + lw // 2
                         fy = ly + lh // 2
@@ -180,19 +180,19 @@ def main():
                 else:
                     #Users face hasn't been detected once in this session so just follow a pattern
                     if offscreen_last_command == "initial":
-                        speak("I cannot see your face yet. Please take two steps back.")
+                        speak("I cannot see your face yet. Please take two steps back without turning around.")
                         offscreen_last_command = "step_back"
 
                     elif offscreen_last_command == "step_back":
-                        speak("Perfect. Now take two steps towards your left side.")
+                        speak("Perfect. Now take two side-steps towards your left side.")
                         offscreen_last_command = "move_left"
                         
                     elif offscreen_last_command == "move_left":
-                        speak("Okay. Now take four step towards your right side.")
+                        speak("Okay. Now take four side-steps towards your right side.")
                         offscreen_last_command = "move_right"
                         
                     elif offscreen_last_command == "move_closer":
-                        speak("Now take one more step backward again.")
+                        speak("Now take one more step backward without turning around.")
                         offscreen_last_command = "final_adjust"
                     else:
                         speak("Please adjust your position slowly; I’ll keep guiding you.")
