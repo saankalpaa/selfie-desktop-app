@@ -198,10 +198,7 @@ def main():
                 else:
                     #Users face hasn't been detected once in this session so just follow a pattern
                     if offscreen_last_command == "initial":
-                        speak("I cannot see your face. Please try slightly turning your head towards the sound.")
-                        offscreen_last_command = "rotate_head"
-                    elif offscreen_last_command == "rotate_head":
-                        speak("Please take two steps back without turning around.")
+                        speak("No face detected yet. Please take two steps back without turning around.")
                         offscreen_last_command = "step_back"
                     elif offscreen_last_command == "step_back":
                         speak("Perfect. Now take two side-steps towards your left side.")
