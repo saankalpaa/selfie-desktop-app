@@ -1,3 +1,4 @@
+import platform
 import subprocess
 import speech_recognition as sr
 from constant import MAX_ATTEMPTS_TO_GET_A_TARGET_POSITION, VALID_POSITIONS
@@ -5,18 +6,33 @@ from constant import MAX_ATTEMPTS_TO_GET_A_TARGET_POSITION, VALID_POSITIONS
 recognizer = sr.Recognizer()
 microphone = sr.Microphone()
 
+system = platform.system()
+
+if system == "Windows":
+    # only import and use pyttsx3 if the device is windows
+    import pyttsx3
+    engine = pyttsx3.init()
+    engine.setProperty('rate', 150)
+
 with microphone as source:
     recognizer.adjust_for_ambient_noise(source, duration=1.5)
-    
+
+
 def speak(text: str):
-    """Uses mac os 'say' command for tts"""
+    """This supports both windows and macOs"""
     print('[APP]: ', text)
     
     try:
-        subprocess.run(['say', text], check=True)
+        if system == "Darwin":
+            # for macOs we use macOs "say" command
+            subprocess.run(['say', text], check=True)
+        elif system == "Windows":
+            # for windows we use pyttsx3 engine
+            engine.say(text)
+            engine.runAndWait() 
     except Exception as e:
         print("TTS Error", e)
-            
+              
 
 def listen_for_command():
     with microphone as source:
