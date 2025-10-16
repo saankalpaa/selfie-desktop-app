@@ -8,12 +8,6 @@ microphone = sr.Microphone()
 
 system = platform.system()
 
-if system == "Windows":
-    # only import and use pyttsx3 if the device is windows
-    import pyttsx3
-    engine = pyttsx3.init()
-    engine.setProperty('rate', 150)
-
 with microphone as source:
     recognizer.adjust_for_ambient_noise(source, duration=1.5)
 
@@ -28,6 +22,9 @@ def speak(text: str):
             subprocess.run(['say', text], check=True)
         elif system == "Windows":
             # for windows we use pyttsx3 engine
+            import pyttsx3
+            engine = pyttsx3.init()
+            engine.setProperty('rate', 150)
             engine.say(text)
             engine.runAndWait() 
     except Exception as e:
